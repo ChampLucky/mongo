@@ -1,0 +1,172 @@
+Mongodb 
+
+
+Mongo vs Mongod
+
+shell that connencts to a specific instance of mongod/ deamon host process for mongodb database
+
+
+Collection
+doucment
+field
+
+
+--commands 
+1. show all databases
+show dbs
+
+2. switch to a database as well as create it
+use db_name
+
+3. which db you are using currently
+db
+
+4.delete database
+db.dropDatabase()
+
+5. to views collections
+show collections
+
+6. create collections
+db.createCollection('comments')
+
+7. delete a collection
+db.collection_name.drop()
+ex. -> db.comments.drop()
+
+8. insert a document in collection
+ db.comments.insert({
+ 'name':'harry',
+ 'lang':'java',
+ 'memberSince':5
+ })
+
+
+9. insert many documents
+
+ db.comments.insertMany([{
+ 'name':'lovish',
+ 'lang':'python',
+ 'memberSince':4
+ },
+	{
+ 'name':'lucky',
+ 'lang':'java',
+ 'memberSince':5
+ },
+	{
+ 'name':'ritija',
+ 'lang':'json',
+ 'memberSince':3
+ }])
+ 
+10. find all the documents in a collection
+db.comments.find()
+db.comments.find().pretty()
+
+11. search a document in a collection
+pass an object to find func
+db.comments.find({'lang':'python'})
+
+
+------------------------------------------------------------
+
+function(query, fields, limit, skip, batchSize, options) {
+    var cursor = new DBQuery(this._mongo,
+                             this._db,
+                             this,
+                             this._fullName,
+                             this._massageObject(query),
+                             fields,
+                             limit,
+                             skip,
+                             batchSize,
+                             options || this.getQueryOptions());
+
+    {
+        const session = this.getDB().getSession();
+
+        const readPreference = session._getSessionAwareClient().getReadPreference(session);
+        if (readPreference !== null) {
+            cursor.readPref(readPreference.mode, readPreference.tags);
+        }
+
+        const readConcern = session._getSessionAwareClient().getReadConcern(session);
+        if (readConcern !== null) {
+            cursor.readConcern(readConcern.level);
+        }
+    }
+
+    return cursor;
+}
+--------------------------------------------------------------------------
+
+12. limit the output
+db.comments.find().pretty().limit(2)
+
+
+13. count the output doucments
+db.comments.find().count()
+
+14. for a object count rows
+db.comments.find({name:'lucky'}).count()
+> 1
+
+15. sort in ascending order on basis of a field
+db.comments.find().sort({memberSince:1}).pretty()
+
+16. sort in descending order on basis of a field
+db.comments.find().sort({memberSince:-1}).pretty()
+
+17.find one output of a object
+db.comments.findOne({name:'lucky'})
+
+18. update a doucment
+db.comments.update({name:'lucky'},
+{
+	name:'vikas',
+	lang:'java',
+	memberSince:10
+}
+)
+
+19. insert object if not matching not found at the time of update
+db.comments.update({name:'rashmika'},
+{
+	name:'disha',
+	lang:'java',
+	memberSince:10
+},
+{upsert:true})
+
+
+20. increment operator
+db.comments.update({name:'disha'},
+{$inc:{
+	memberSince:2
+}}
+)
+
+21. renaming field using update and rename operator
+db.comments.update({name:'disha'},
+{$rename:{
+	memberSince:' 'member
+}}
+)
+
+22. renaming a field for all documents
+db.comments.update({},
+{$rename:{
+	memberSince:'member'
+}}
+)
+
+23. remove a document
+db.comments.remove({name:'disha'})
+
+24 . using $lt
+
+db.comments.find({memberSince: {$lt:5}})
+
+
+$lt,$gt,$lte,$gte
